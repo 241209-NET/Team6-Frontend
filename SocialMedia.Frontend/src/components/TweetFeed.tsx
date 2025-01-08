@@ -1,5 +1,7 @@
 import Tweet from "./Tweet";
 import { TweetFeedProps } from "@/vite-env";
+import { Input } from "./ui/input";
+import { useState } from "react";
 
 const TweetFeed = ({
   tweets,
@@ -14,8 +16,22 @@ const TweetFeed = ({
   replyBody,
   setReplyBody,
 }: TweetFeedProps) => {
+  const [input, setinput] = useState("");
+
+  function handleSubmit() {
+    console.log(input);
+  }
+
   return (
     <div className="space-y-4">
+      <Input
+        className="border-slate-600 rounded-lg mb-4"
+        type="text"
+        placeholder="Search Tweets"
+        onChange={(e) => setinput(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+      />
+
       {tweets
         .filter((tweet) => !tweet.parentId)
         .map((tweet) => (
