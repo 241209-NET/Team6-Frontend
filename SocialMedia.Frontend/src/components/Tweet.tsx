@@ -9,6 +9,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { TweetProps } from "@/vite-env";
+import { detectAndTranslate } from "./Utility/detectAndTranslate";
 
 const Tweet = ({
   tweet,
@@ -26,6 +27,22 @@ const Tweet = ({
 }: TweetProps) => {
   const [editMode, setEditMode] = useState(false);
   const [updatedBody, setUpdatedBody] = useState("");
+  const [translatedText, setTranslatedText] = useState(tweet.body);
+  const [isTranslated, setIsTranslated] = useState(false);
+
+  async function TranslateTextUsingApi() {
+    // toggle for false and true, it starts at false and will hit it once
+    if (!isTranslated) {
+      // check to see if it's already translated, if it is, skip and just change the boolean for conditional rendering to avoid multiple api calls.
+      if (translatedText == tweet.body) {
+        const translationFromApi = await detectAndTranslate(tweet.body, "en");
+        setTranslatedText(`Translation: ${translationFromApi}`);
+      }
+      setIsTranslated(true);
+    } else {
+      setIsTranslated(false);
+    }
+  }
 
   // Show an update and delete button if user owns this tweet
   const canUpdate = currentUser && currentUser.id === tweet.userId;
@@ -38,14 +55,26 @@ const Tweet = ({
       <CardHeader>
         <CardTitle>{tweet.user?.username || "Anonymous"}</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-col">
         {/* If not in edit mode, display tweet body. Else show the input. */}
         {!editMode ? (
           <>
-            <p className="text-sm text-white">{tweet.body}</p>
+            <p className="text-sm text-white">
+              {isTranslated ? translatedText : tweet.body}
+            </p>
             <p className="text-xs text-slate-300">
               {new Date(tweet.createdAt).toLocaleString()}
             </p>
+            <a
+              className="block pt-2 text-blue-500 hover:underline"
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                TranslateTextUsingApi();
+              }}
+            >
+              {isTranslated ? "Show Original" : "Click here to translate"}
+            </a>
           </>
         ) : (
           <div className="flex flex-col space-y-2">
