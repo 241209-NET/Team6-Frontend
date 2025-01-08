@@ -13,7 +13,7 @@ This project is a Frontend React application for an online Cloud-hosted Live Soc
 
 ## External API
 
-Weather API
+MyMemory API - Assisted with franc and iso-693-3-to-1
 
 ## Project Management
 
