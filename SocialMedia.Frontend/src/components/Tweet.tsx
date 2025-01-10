@@ -29,6 +29,9 @@ const Tweet = ({
   const [updatedBody, setUpdatedBody] = useState("");
   const [translatedText, setTranslatedText] = useState(tweet.body);
   const [isTranslated, setIsTranslated] = useState(false);
+  const [showReplies, setShowReplies] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [replies, setReplies] = useState<any[]>([]);
 
   async function TranslateTextUsingApi() {
     // toggle for false and true, it starts at false and will hit it once
@@ -44,8 +47,18 @@ const Tweet = ({
     }
   }
 
+  //toggle for showing replies to set the replies array to have content
+  function ShowReplies() {
+    if (!showReplies) {
+      setReplies(tweets.filter((r) => r.parentId === tweet.id));
+      setShowReplies(true);
+    } else {
+      setReplies([]);
+      setShowReplies(false);
+    }
+  }
+
   // recursive rendering of replies
-  const replies = tweets.filter((r) => r.parentId === tweet.id);
 
   // Show an update and delete button if user owns this tweet
   const canUpdate = currentUser && currentUser.id === tweet.userId;
@@ -151,26 +164,41 @@ const Tweet = ({
         </div>
       )}
 
+      {/* Only show button if there are potential replies */}
+      {tweets.filter((r) => r.parentId === tweet.id).length > 0 && (
+        <a
+          className="p-6 text-blue-500 hover:underline cursor-pointer"
+          onClick={(e) => {
+            e.preventDefault();
+            ShowReplies();
+          }}
+        >
+          Show replies
+        </a>
+      )}
+
       {/* Render replies */}
-      <div className="ml-6 mt-4 space-y-4">
-        {replies.map((r) => (
-          <Tweet
-            key={r.id}
-            tweet={r}
-            currentUser={currentUser}
-            handleLike={handleLike}
-            handleDislike={handleDislike}
-            setReplyParentId={setReplyParentId}
-            handlePostReply={handlePostReply}
-            handleDeleteTweet={handleDeleteTweet}
-            handleUpdateTweet={handleUpdateTweet}
-            replyParentId={replyParentId}
-            replyBody={replyBody}
-            setReplyBody={setReplyBody}
-            tweets={tweets}
-          />
-        ))}
-      </div>
+      {showReplies && (
+        <div className="ml-6 mt-4 space-y-4">
+          {replies.map((r) => (
+            <Tweet
+              key={r.id}
+              tweet={r}
+              currentUser={currentUser}
+              handleLike={handleLike}
+              handleDislike={handleDislike}
+              setReplyParentId={setReplyParentId}
+              handlePostReply={handlePostReply}
+              handleDeleteTweet={handleDeleteTweet}
+              handleUpdateTweet={handleUpdateTweet}
+              replyParentId={replyParentId}
+              replyBody={replyBody}
+              setReplyBody={setReplyBody}
+              tweets={tweets}
+            />
+          ))}
+        </div>
+      )}
     </Card>
   );
 };
