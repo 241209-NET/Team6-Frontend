@@ -7,9 +7,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TweetProps } from "@/vite-env";
 import { detectAndTranslate } from "./Utility/detectAndTranslate";
+import { franc } from "franc";
 
 const Tweet = ({
   tweet,
@@ -32,6 +33,7 @@ const Tweet = ({
   const [showReplies, setShowReplies] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [replies, setReplies] = useState<any[]>([]);
+  const [isNonEnglish, setIsNonEnglish] = useState(false);
 
   async function TranslateTextUsingApi() {
     // toggle for false and true, it starts at false and will hit it once
@@ -58,7 +60,14 @@ const Tweet = ({
     }
   }
 
-  // recursive rendering of replies
+  //Attemping to implement a language detection for the translation button to show but it's seriously broken, can't detect english easily. w/e I'm just leaving it here cause sometimes it works lol
+  useEffect(() => {
+    // Detect the language of the tweet body
+    const detectedLang = franc(tweet.body);
+
+    console.log(detectedLang);
+    setIsNonEnglish(detectedLang !== "eng");
+  }, [tweet.body]);
 
   // Show an update and delete button if user owns this tweet
   const canUpdate = currentUser && currentUser.id === tweet.userId;
@@ -81,16 +90,18 @@ const Tweet = ({
             <p className="text-xs text-slate-300">
               {new Date(tweet.createdAt).toLocaleString()}
             </p>
-            <a
-              className="block pt-2 text-blue-500 hover:underline"
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                TranslateTextUsingApi();
-              }}
-            >
-              {isTranslated ? "Show Original" : "Click here to translate"}
-            </a>
+            {isNonEnglish && (
+              <a
+                className="block pt-2 text-blue-500 hover:underline"
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  TranslateTextUsingApi();
+                }}
+              >
+                {isTranslated ? "Show Original" : "Click here to translate"}
+              </a>
+            )}
           </>
         ) : (
           <div className="flex flex-col space-y-2">
@@ -173,7 +184,7 @@ const Tweet = ({
             ShowReplies();
           }}
         >
-          Show replies
+          {showReplies ? "Hide replies" : "Show replies"}
         </a>
       )}
 
