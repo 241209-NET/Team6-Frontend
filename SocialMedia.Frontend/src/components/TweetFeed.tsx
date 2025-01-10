@@ -32,25 +32,27 @@ const TweetFeed = ({
         onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
       />
 
-      {tweets
-        .filter((tweet) => !tweet.parentId)
-        .map((tweet) => (
-          <Tweet
-            key={tweet.id}
-            tweet={tweet}
-            currentUser={currentUser}
-            handleLike={handleLike}
-            handleDislike={handleDislike}
-            setReplyParentId={setReplyParentId}
-            handlePostReply={handlePostReply}
-            handleDeleteTweet={handleDeleteTweet}
-            handleUpdateTweet={handleUpdateTweet}
-            replyParentId={replyParentId}
-            replyBody={replyBody}
-            setReplyBody={setReplyBody}
-            tweets={tweets}
-          />
-        ))}
+      {/* adding an array check so if some reason tweets is null, it doesn't do stupid things */}
+      {Array.isArray(tweets) &&
+        tweets
+          .filter((tweet) => !tweet.parentId)
+          .map((tweet) => (
+            <Tweet
+              key={tweet.id}
+              tweet={tweet}
+              currentUser={currentUser}
+              handleLike={handleLike}
+              handleDislike={handleDislike}
+              setReplyParentId={setReplyParentId}
+              handlePostReply={handlePostReply}
+              handleDeleteTweet={handleDeleteTweet}
+              handleUpdateTweet={handleUpdateTweet}
+              replyParentId={replyParentId}
+              replyBody={replyBody}
+              setReplyBody={setReplyBody}
+              tweets={tweets}
+            />
+          ))}
     </div>
   );
 };
