@@ -23,7 +23,7 @@ const Tweet = ({
   replyParentId,
   replyBody,
   setReplyBody,
-  replies,
+  tweets,
 }: TweetProps) => {
   const [editMode, setEditMode] = useState(false);
   const [updatedBody, setUpdatedBody] = useState("");
@@ -43,6 +43,9 @@ const Tweet = ({
       setIsTranslated(false);
     }
   }
+
+  // recursive rendering of replies
+  const replies = tweets.filter((r) => r.parentId === tweet.id);
 
   // Show an update and delete button if user owns this tweet
   const canUpdate = currentUser && currentUser.id === tweet.userId;
@@ -97,7 +100,7 @@ const Tweet = ({
         )}
       </CardContent>
 
-      <CardFooter className="flex justify-start space-x-2">
+      <CardFooter className="flex-wrap gap-2">
         {/* Like and Dislike buttons */}
         <Button onClick={() => handleLike(tweet.id)}>
           Like ({tweet.likes})
@@ -164,7 +167,7 @@ const Tweet = ({
             replyParentId={replyParentId}
             replyBody={replyBody}
             setReplyBody={setReplyBody}
-            replies={[]}
+            tweets={tweets}
           />
         ))}
       </div>

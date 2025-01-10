@@ -48,7 +48,7 @@ const TweetFeed = ({
             replyParentId={replyParentId}
             replyBody={replyBody}
             setReplyBody={setReplyBody}
-            replies={tweets.filter((r) => r.parentId === tweet.id)}
+            tweets={tweets}
           />
         ))}
     </div>

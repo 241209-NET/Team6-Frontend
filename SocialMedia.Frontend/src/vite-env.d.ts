@@ -32,7 +32,7 @@ export interface TweetProps {
   replyBody: string;
   setReplyBody: (body: string) => void;
 
-  replies: Tweet[];
+  tweets: Tweet[];
 }
 
 export interface TweetFeedProps {

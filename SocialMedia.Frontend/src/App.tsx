@@ -219,13 +219,15 @@ const App = () => {
   return (
     <div className="min-h-screen bg-slate-800 text-white">
       {/* Navbar */}
-      <div className="bg-slate-600 border-b border-slate-700">
+      <div className="bg-slate-900 border-b border-slate-700">
         <div className="w-full flex justify-between items-center py-4 px-4">
-          <h1 className="text-xl font-bold text-white">
-            Cuong's Social Media APP
+          <h1 className="font-pacifico text-4xl text-white">
+            Live Social Media
           </h1>
-          <div>
-            <span className="mr-3">Logged in as: {currentUser.username}</span>
+          <div className="">
+            <span className="sm:mr-3">
+              Logged in as: {currentUser.username}
+            </span>
             <Button
               variant="secondary"
               onClick={() => {
