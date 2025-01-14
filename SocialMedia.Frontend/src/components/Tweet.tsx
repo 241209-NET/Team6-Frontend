@@ -223,7 +223,7 @@ const Tweet = ({
               replyBody={replyBody}
               setReplyBody={setReplyBody}
               tweets={tweets}
-              isFirst={isFirst}
+              isFirst={true} // Setting to always true on replies so it always animates
             />
           ))}
         </div>
