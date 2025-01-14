@@ -25,6 +25,7 @@ const Tweet = ({
   replyBody,
   setReplyBody,
   tweets,
+  isFirst,
 }: TweetProps) => {
   const [editMode, setEditMode] = useState(false);
   const [updatedBody, setUpdatedBody] = useState("");
@@ -34,6 +35,16 @@ const Tweet = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [replies, setReplies] = useState<any[]>([]);
   const [isNonEnglish, setIsNonEnglish] = useState(false);
+
+  // Animation visibility
+  const [isVisible, setIsVisible] = useState(false);
+
+  // Only trigger the animation for the first tweet and then stop
+  useEffect(() => {
+    if (isFirst) {
+      setTimeout(() => setIsVisible(true), 50);
+    }
+  }, [isFirst]);
 
   async function TranslateTextUsingApi() {
     // toggle for false and true, it starts at false and will hit it once
@@ -75,7 +86,13 @@ const Tweet = ({
   return (
     <Card
       key={tweet.id}
-      className="shadow-sm bg-slate-800 text-white border-slate-600"
+      className={`shadow-sm bg-slate-800 text-white border-slate-600 transition-all duration-500 ease-out ${
+        isFirst
+          ? isVisible
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 -translate-y-5" // Animation for the first tweet so that it slides into place
+          : ""
+      }`}
     >
       <CardHeader>
         <CardTitle>{tweet.user?.username || "Anonymous"}</CardTitle>
@@ -206,6 +223,7 @@ const Tweet = ({
               replyBody={replyBody}
               setReplyBody={setReplyBody}
               tweets={tweets}
+              isFirst={isFirst}
             />
           ))}
         </div>

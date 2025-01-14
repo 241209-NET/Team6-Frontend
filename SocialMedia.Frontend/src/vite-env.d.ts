@@ -33,6 +33,7 @@ export interface TweetProps {
   setReplyBody: (body: string) => void;
 
   tweets: Tweet[];
+  isFirst: boolean;
 }
 
 export interface TweetFeedProps {

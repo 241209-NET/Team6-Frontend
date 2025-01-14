@@ -36,7 +36,7 @@ const TweetFeed = ({
       {Array.isArray(tweets) &&
         tweets
           .filter((tweet) => !tweet.parentId)
-          .map((tweet) => (
+          .map((tweet, index) => (
             <Tweet
               key={tweet.id}
               tweet={tweet}
@@ -51,6 +51,7 @@ const TweetFeed = ({
               replyBody={replyBody}
               setReplyBody={setReplyBody}
               tweets={tweets}
+              isFirst={index === 0} // I'm passing `isFirst` as true for the first tweet for animation purposes
             />
           ))}
     </div>
