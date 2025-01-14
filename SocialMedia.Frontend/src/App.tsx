@@ -10,7 +10,7 @@ import {
   getSignalRConnection,
 } from "./components/Utility/singalRConnection";
 
-const baseURL = "http://localhost:5108";
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 const App = () => {
   // 1) Login/Register states

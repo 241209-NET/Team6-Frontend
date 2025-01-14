@@ -2,6 +2,8 @@
 import { Tweet } from "@/vite-env";
 import { HubConnectionBuilder, HubConnection } from "@microsoft/signalr";
 
+const baseURL = import.meta.env.VITE_BASE_URL;
+
 let connection: HubConnection | null = null;
 
 type Handlers = {
@@ -14,7 +16,7 @@ type Handlers = {
 
 export async function initializeSignalRConnection(handlers: Handlers) {
   connection = new HubConnectionBuilder()
-    .withUrl("http://localhost:5108/socialMediaHub")
+    .withUrl(`${baseURL}/socialMediaHub`)
     .withAutomaticReconnect()
     .build();
 
