@@ -28,17 +28,38 @@ const App = () => {
   const handleLogin = async () => {
     try {
       const payload = { username, password };
-      const response = await axios.post<User>(
+
+      // Send login request to the backend
+      const response = await axios.post<{ token: string; user: User }>(
         `${baseURL}/api/User/login`,
         payload
       );
-      setCurrentUser(response.data);
 
-      //Fetching after successful login
+      // Log the response to debug
+      console.log("Login response:", response.data);
+
+      // Destructure the token and user
+      const { token, user } = response.data;
+
+      if (!token || !user) {
+        throw new Error("Invalid login response");
+      }
+
+      // Store the token in localStorage
+      localStorage.setItem("token", token);
+
+      // Set the current user
+      setCurrentUser(user);
+
+      // Fetch tweets after login
       fetchTweets();
-    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       console.error("Login error:", error);
-      alert("Invalid credentials or user not found.");
+      alert(
+        error.response?.data?.message ||
+          "Invalid credentials or user not found."
+      );
     }
   };
 
@@ -162,6 +183,28 @@ const App = () => {
     );
   };
 
+  const autoLogin = async () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        // Fetch user details using the new "current" endpoint
+        const userResponse = await axios.get<User>(
+          `${baseURL}/api/User/current`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        // Set the current user and fetch tweets
+        setCurrentUser(userResponse.data);
+        fetchTweets(); // Fetch tweets after auto-login
+      } catch (error) {
+        console.error("Auto-login error:", error);
+        localStorage.removeItem("token"); // Remove invalid token if auto-login fails
+      }
+    }
+  };
+
   useEffect(() => {
     initializeSignalRConnection({
       onReceiveTweet: handleReceiveTweet,
@@ -170,6 +213,7 @@ const App = () => {
       onDeleteTweet: handleDeleteTweetSignalR,
       onUpdateTweet: handleUpdateTweetSignalR,
     });
+    autoLogin();
     fetchTweets();
 
     return () => {
@@ -233,6 +277,7 @@ const App = () => {
               onClick={() => {
                 setCurrentUser(null);
                 setTweets([]);
+                localStorage.removeItem("token"); // clearing token on logout
               }}
             >
               Logout
