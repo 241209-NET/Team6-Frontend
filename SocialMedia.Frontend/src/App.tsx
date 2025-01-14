@@ -183,28 +183,6 @@ const App = () => {
     );
   };
 
-  const autoLogin = async () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        // Fetch user details using the new "current" endpoint
-        const userResponse = await axios.get<User>(
-          `${baseURL}/api/User/current`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        // Set the current user and fetch tweets
-        setCurrentUser(userResponse.data);
-        fetchTweets(); // Fetch tweets after auto-login
-      } catch (error) {
-        console.error("Auto-login error:", error);
-        localStorage.removeItem("token"); // Remove invalid token if auto-login fails
-      }
-    }
-  };
-
   useEffect(() => {
     initializeSignalRConnection({
       onReceiveTweet: handleReceiveTweet,
@@ -213,6 +191,28 @@ const App = () => {
       onDeleteTweet: handleDeleteTweetSignalR,
       onUpdateTweet: handleUpdateTweetSignalR,
     });
+
+    const autoLogin = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          // Fetch user details using the new "current" endpoint
+          const userResponse = await axios.get<User>(
+            `${baseURL}/api/User/current`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+
+          // Set the current user and fetch tweets
+          setCurrentUser(userResponse.data);
+          fetchTweets(); // Fetch tweets after auto-login
+        } catch (error) {
+          console.error("Auto-login error:", error);
+          localStorage.removeItem("token"); // Remove invalid token if auto-login fails
+        }
+      }
+    };
     autoLogin();
     fetchTweets();
 
