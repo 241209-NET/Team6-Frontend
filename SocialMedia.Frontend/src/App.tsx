@@ -52,8 +52,7 @@ const App = () => {
       setCurrentUser(user);
 
       // Fetch tweets after login
-      //fetchTweets();
-      fetchAllTweets();
+      fetchTweets();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Login error:", error);
@@ -76,8 +75,7 @@ const App = () => {
       setPassword("");
 
       //running fetch
-      //fetchTweets();
-      fetchAllTweets();
+      fetchTweets();
     } catch (error) {
       console.error("Register error:", error);
       alert("Error creating user. Try a different username.");
@@ -85,8 +83,7 @@ const App = () => {
   };
 
   // 5) Axios calls for tweets
-  //const fetchTweets = async () => {
-  const fetchAllTweets = async () => {
+  const fetchTweets = async () => {
     try {
       const response = await axios.get<Tweet[]>(`${baseURL}/api/Tweet`);
       setTweets(response.data);
@@ -209,14 +206,11 @@ const App = () => {
 
           // Set the current user and fetch tweets
           setCurrentUser(userResponse.data);
-          //fetchTweets(); // Fetch tweets after auto-login
-          fetchAllTweets();
+          fetchTweets(); // Fetch tweets after auto-login
         } catch (error) {
           console.error("Auto-login error:", error);
           localStorage.removeItem("token"); // Remove invalid token if auto-login fails
         }
-      } else {
-        fetchAllTweets();
       }
     };
     autoLogin();
