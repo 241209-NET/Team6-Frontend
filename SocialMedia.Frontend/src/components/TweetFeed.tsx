@@ -1,7 +1,8 @@
 import Tweet from "./Tweet";
 import { TweetFeedProps } from "@/vite-env";
 import { Input } from "./ui/input";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { Button } from "./ui/button";
 
 const TweetFeed = ({
   tweets,
@@ -16,28 +17,53 @@ const TweetFeed = ({
   replyBody,
   setReplyBody,
 }: TweetFeedProps) => {
-  //const [input, setinput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5; // Number of tweets per page
 
-  function handleSubmit() {
+  // Filter tweets based on search term
+  const filteredTweets = useMemo(() => {
+    return Array.isArray(tweets)
+      ? tweets
+          .filter((tweet) => !tweet.parentId)
+          .filter((tweet) => {
+            const bodyMatch = tweet.body
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase());
+            const userMatch = tweet.user?.username
+              ?.toLowerCase()
+              .includes(searchTerm.toLowerCase());
+            return bodyMatch || userMatch;
+          })
+      : [];
+  }, [tweets, searchTerm]);
+
+  // Paginate filtered tweets
+  const paginatedTweets = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return filteredTweets.slice(startIndex, endIndex);
+  }, [filteredTweets, currentPage, pageSize]);
+
+  const totalPages = useMemo(
+    () => Math.ceil(filteredTweets.length / pageSize),
+    [filteredTweets.length, pageSize]
+  );
+
+  // Handle search submission (optional)
+  const handleSubmit = () => {
     console.log("Searching for:", searchTerm);
-  }
+    setCurrentPage(1); // Reset to the first page on search
+  };
 
-  const filteredTweets = Array.isArray(tweets)
-    ? tweets
-        .filter((tweet) => !tweet.parentId)
-        .filter((tweet) => {
-          // Convert text to lower case for case-insensitive match
-          const bodyMatch = tweet.body
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-          const userMatch = tweet.user?.username
-            ?.toLowerCase()
-            .includes(searchTerm.toLowerCase());
+  // Pagination controls
+  const handlePrevPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
 
-          return bodyMatch || userMatch;
-        })
-    : [];
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
 
   return (
     <div className="space-y-4">
@@ -50,8 +76,8 @@ const TweetFeed = ({
         onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
       />
 
-      {/* adding an array check so if some reason tweets is null, it doesn't do stupid things */}
-      {filteredTweets.map((tweet, index) => (
+      {/* Paginated Tweets */}
+      {paginatedTweets.map((tweet, index) => (
         <Tweet
           key={tweet.id}
           tweet={tweet}
@@ -66,10 +92,32 @@ const TweetFeed = ({
           replyBody={replyBody}
           setReplyBody={setReplyBody}
           tweets={tweets}
-          // optional "isFirst" prop if you want to animate the first tweet
           isFirst={index === 0}
-            />
-          ))}
+        />
+      ))}
+
+      {/* Pagination Controls */}
+      <div className="flex justify-between items-center mt-4">
+        <Button
+          variant="secondary"
+          className="bg-slate-900 text-white hover:text-slate-800 px-4 py-2 rounded"
+          onClick={handlePrevPage}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </Button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <Button
+          variant="secondary"
+          className="bg-slate-900 text-white hover:text-slate-800 px-4 py-2 rounded"
+          onClick={handleNextPage}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </Button>
+      </div>
     </div>
   );
 };
