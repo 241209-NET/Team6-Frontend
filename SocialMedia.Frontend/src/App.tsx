@@ -36,7 +36,7 @@ const App = () => {
       );
 
       // Log the response to debug
-      console.log("Login response:", response.data);
+      // console.log("Login response:", response.data);
 
       // Destructure the token and user
       const { token, user } = response.data;
