@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,23 +23,6 @@ const App = () => {
   const [newTweet, setNewTweet] = useState("");
   const [replyBody, setReplyBody] = useState("");
   const [replyParentId, setReplyParentId] = useState<number | null>(null);
-  // Store **all** tweets in 'allTweets'
-  const [allTweets, setAllTweets] = useState<Tweet[]>([]);
-
-  // 2a) PAGINATION STATES
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(5); // You can customize
-
-  const currentPageTweets = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    return allTweets.slice(startIndex, endIndex);
-  }, [allTweets, currentPage, pageSize]);
-
-  // Keep 'tweets' in sync with the current page’s tweets
-  useEffect(() => {
-    setTweets(currentPageTweets);
-  }, [currentPageTweets]);
 
   // 3) Login function
   const handleLogin = async () => {
@@ -70,7 +53,7 @@ const App = () => {
 
       // Fetch tweets after login
       //fetchTweets();
-      fetchAllTweets(); 
+      fetchAllTweets();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Login error:", error);
@@ -94,7 +77,7 @@ const App = () => {
 
       //running fetch
       //fetchTweets();
-      fetchAllTweets(); 
+      fetchAllTweets();
     } catch (error) {
       console.error("Register error:", error);
       alert("Error creating user. Try a different username.");
@@ -103,7 +86,7 @@ const App = () => {
 
   // 5) Axios calls for tweets
   //const fetchTweets = async () => {
-    const fetchAllTweets = async () => {
+  const fetchAllTweets = async () => {
     try {
       const response = await axios.get<Tweet[]>(`${baseURL}/api/Tweet`);
       setTweets(response.data);
@@ -174,36 +157,31 @@ const App = () => {
   // ---------------------------
   const handleReceiveTweet = (tweet: Tweet) => {
     console.log("New tweet received via SignalR:", tweet);
-    //setTweets((prev) => [tweet, ...prev]);
-    setAllTweets((prev) => [tweet, ...prev]);
+    setTweets((prev) => [tweet, ...prev]);
   };
 
   const handleLikeTweet = (tweetId: number) => {
     console.log("Tweet liked via SignalR:", tweetId);
-    //setTweets((prev) =>
-    setAllTweets((prev) =>
+    setTweets((prev) =>
       prev.map((t) => (t.id === tweetId ? { ...t, likes: t.likes + 1 } : t))
     );
   };
 
   const handleUnlikeTweet = (tweetId: number) => {
     console.log("Tweet disliked via SignalR:", tweetId);
-    //setTweets((prev) =>
-    setAllTweets((prev) =>
+    setTweets((prev) =>
       prev.map((t) => (t.id === tweetId ? { ...t, likes: t.likes - 1 } : t))
     );
   };
 
   const handleDeleteTweetSignalR = (tweetId: number) => {
     console.log("Tweet deleted via SignalR:", tweetId);
-    //setTweets((prev) => prev.filter((t) => t.id !== tweetId));
-    setAllTweets((prev) => prev.filter((t) => t.id !== tweetId));
+    setTweets((prev) => prev.filter((t) => t.id !== tweetId));
   };
 
   const handleUpdateTweetSignalR = (updatedTweet: Tweet) => {
     console.log("Tweet updated via SignalR:", updatedTweet);
-    //setTweets((prev) =>
-    setAllTweets((prev) =>
+    setTweets((prev) =>
       prev.map((t) => (t.id === updatedTweet.id ? updatedTweet : t))
     );
   };
@@ -232,7 +210,7 @@ const App = () => {
           // Set the current user and fetch tweets
           setCurrentUser(userResponse.data);
           //fetchTweets(); // Fetch tweets after auto-login
-          fetchAllTweets(); 
+          fetchAllTweets();
         } catch (error) {
           console.error("Auto-login error:", error);
           localStorage.removeItem("token"); // Remove invalid token if auto-login fails
@@ -242,7 +220,6 @@ const App = () => {
       }
     };
     autoLogin();
-    
 
     return () => {
       const connection = getSignalRConnection();
@@ -256,19 +233,6 @@ const App = () => {
       }
     };
   }, []);
-
-  // PAGINATION CONTROLS
-  // Move to previous page
-  const handlePrevPage = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 1));
-  };
-
-  // Move to next page (only if there are more tweets)
-  const handleNextPage = () => {
-    setCurrentPage((prev) =>
-      (prev * pageSize < allTweets.length) ? prev + 1 : prev
-    );
-  };
 
   // If the user is not logged in, show a combined Login / Register UI
   if (!currentUser) {
@@ -302,7 +266,7 @@ const App = () => {
 
   // If the user is logged in, show tweets
   return (
-    <div className="min-h-screen bg-slate-800 text-white">
+    <div className="min-h-screen bg-slate-800 text-white pb-6 overflow-hidden">
       {/* Navbar */}
       <div className="bg-slate-900 border-b border-slate-700">
         <div className="w-full flex justify-between items-center py-4 px-4">
@@ -317,8 +281,9 @@ const App = () => {
               variant="secondary"
               onClick={() => {
                 setCurrentUser(null);
-                setAllTweets([]);
-                setTweets([]); 
+
+                setTweets([]);
+
                 localStorage.removeItem("token"); // clearing token on logout
               }}
             >
@@ -357,22 +322,6 @@ const App = () => {
           replyBody={replyBody}
           setReplyBody={setReplyBody}
         />
-
-        {/* Pagination */}
-        <div className="flex justify-between items-center mt-6">
-          <Button onClick={handlePrevPage} disabled={currentPage === 1}>
-            Previous Page
-          </Button>
-          <span>
-            Page {currentPage} of {Math.ceil(allTweets.length / pageSize)}
-          </span>
-          <Button
-            onClick={handleNextPage}
-            disabled={currentPage * pageSize >= allTweets.length}
-          >
-            Next Page
-          </Button>
-        </div>
       </div>
     </div>
   );
