@@ -75,8 +75,6 @@ const Tweet = ({
   useEffect(() => {
     // Detect the language of the tweet body
     const detectedLang = franc(tweet.body);
-
-    console.log(detectedLang);
     setIsNonEnglish(detectedLang !== "eng");
   }, [tweet.body]);
 

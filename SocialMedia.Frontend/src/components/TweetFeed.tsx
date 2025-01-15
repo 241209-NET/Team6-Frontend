@@ -52,7 +52,6 @@ const TweetFeed = ({
 
   // Handle search submission (optional)
   const handleSubmit = () => {
-    console.log("Searching for:", searchTerm);
     setCurrentPage(1); // Reset to the first page on search
   };
 
