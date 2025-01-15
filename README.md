@@ -11,6 +11,10 @@ This project is a Frontend React application for an online Cloud-hosted Live Soc
 - Interact with the application in real-time via SignalR websockets.
 - Frontend features: User Login, Tweet Home Page, Weather API integration.
 
+## Demo App
+
+https://white-island-0a58c890f.4.azurestaticapps.net/
+
 ## External API
 
 MyMemory API - Assisted with franc and iso-693-3-to-1
