@@ -16,11 +16,28 @@ const TweetFeed = ({
   replyBody,
   setReplyBody,
 }: TweetFeedProps) => {
-  const [input, setinput] = useState("");
+  //const [input, setinput] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   function handleSubmit() {
-    console.log(input);
+    console.log("Searching for:", searchTerm);
   }
+
+  const filteredTweets = Array.isArray(tweets)
+    ? tweets
+        .filter((tweet) => !tweet.parentId)
+        .filter((tweet) => {
+          // Convert text to lower case for case-insensitive match
+          const bodyMatch = tweet.body
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+          const userMatch = tweet.user?.username
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase());
+
+          return bodyMatch || userMatch;
+        })
+    : [];
 
   return (
     <div className="space-y-4">
@@ -28,30 +45,29 @@ const TweetFeed = ({
         className="border-slate-600 rounded-lg mb-4"
         type="text"
         placeholder="Search Tweets"
-        onChange={(e) => setinput(e.target.value)}
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
       />
 
       {/* adding an array check so if some reason tweets is null, it doesn't do stupid things */}
-      {Array.isArray(tweets) &&
-        tweets
-          .filter((tweet) => !tweet.parentId)
-          .map((tweet, index) => (
-            <Tweet
-              key={tweet.id}
-              tweet={tweet}
-              currentUser={currentUser}
-              handleLike={handleLike}
-              handleDislike={handleDislike}
-              setReplyParentId={setReplyParentId}
-              handlePostReply={handlePostReply}
-              handleDeleteTweet={handleDeleteTweet}
-              handleUpdateTweet={handleUpdateTweet}
-              replyParentId={replyParentId}
-              replyBody={replyBody}
-              setReplyBody={setReplyBody}
-              tweets={tweets}
-              isFirst={index === 0} // I'm passing `isFirst` as true for the first tweet for animation purposes
+      {filteredTweets.map((tweet, index) => (
+        <Tweet
+          key={tweet.id}
+          tweet={tweet}
+          currentUser={currentUser}
+          handleLike={handleLike}
+          handleDislike={handleDislike}
+          setReplyParentId={setReplyParentId}
+          handlePostReply={handlePostReply}
+          handleDeleteTweet={handleDeleteTweet}
+          handleUpdateTweet={handleUpdateTweet}
+          replyParentId={replyParentId}
+          replyBody={replyBody}
+          setReplyBody={setReplyBody}
+          tweets={tweets}
+          // optional "isFirst" prop if you want to animate the first tweet
+          isFirst={index === 0}
             />
           ))}
     </div>
