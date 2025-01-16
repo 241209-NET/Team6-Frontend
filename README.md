@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is a Frontend React application for an online Cloud-hosted Live Social Media application where users can create accounts and post tweets and receive tweets in real time. There will be an integrated Weather API as a Frontend feature. Tweets and user information will be hosted on the cloud and accessed across the web via an Azure SQL Database. The focus is on building a functional and fluid frontend with **React** and **Tailwind**.
+This project is a Frontend React application for an online Cloud-hosted Live Social Media application where users can create accounts and post tweets and receive tweets in real time. There will be an integrated translation Frontend feature using MyMemory API. Tweets and user information will be hosted on the cloud and accessed across the web via an Azure SQL Database. The focus is on building a functional and fluid frontend with **React** and **Tailwind**.
 
 ## Demo App
 
@@ -18,6 +18,13 @@ https://github.com/241209-NET/Team6-Backend
 - Post, retrieve, like, unlike, and reply to tweets.
 - Interact with the application in real-time via SignalR websockets.
 - Frontend features: User Login, Tweet Home Page, Weather API integration.
+
+## Additional Features
+
+- Login verified and Authenticated with JWT
+- Auto Login
+- Tweetfeed Pagination
+- Tweet Search
 
 ## External API
 
