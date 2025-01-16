@@ -19,7 +19,7 @@ const TweetFeed = ({
 }: TweetFeedProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 5; // Number of tweets per page
+  const pageSize = 10; // Number of tweets per page
 
   // Filter tweets based on search term
   const filteredTweets = useMemo(() => {

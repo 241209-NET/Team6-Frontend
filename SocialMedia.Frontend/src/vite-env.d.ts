@@ -15,6 +15,7 @@ export interface Tweet {
   userId: number;
   user: User;
   replies: Tweet[] | null;
+  isReplied?: boolean;
 }
 
 export interface TweetProps {

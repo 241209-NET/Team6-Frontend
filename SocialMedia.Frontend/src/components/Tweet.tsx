@@ -84,7 +84,9 @@ const Tweet = ({
   return (
     <Card
       key={tweet.id}
-      className={`shadow-sm bg-slate-800 text-white border-slate-600 transition-all duration-500 ease-out ${
+      className={`shadow-sm bg-slate-800 text-white ${
+        tweet.isReplied ? "border-orange-500" : "border-slate-600"
+      } transition-all duration-500 ease-out ${
         isFirst
           ? isVisible
             ? "opacity-100 translate-y-0"
@@ -197,6 +199,7 @@ const Tweet = ({
           onClick={(e) => {
             e.preventDefault();
             ShowReplies();
+            tweet.isReplied = false;
           }}
         >
           {showReplies ? "Hide replies" : "Show replies"}

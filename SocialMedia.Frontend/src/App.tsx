@@ -154,7 +154,34 @@ const App = () => {
   // ---------------------------
   const handleReceiveTweet = (tweet: Tweet) => {
     console.log("New tweet received via SignalR:", tweet);
-    setTweets((prev) => [tweet, ...prev]);
+
+    setTweets((prev) => {
+      // creating a copy of the previous tweets
+      let updatedTweets = [...prev];
+
+      // creaing a function to update isReplied for all parent tweets recursively
+      const updateParentIsReplied = (parentId: number | null) => {
+        if (parentId === null) return;
+
+        updatedTweets = updatedTweets.map((t) =>
+          t.id === parentId ? { ...t, isReplied: true } : t
+        );
+
+        // this is used to find the next parent tweet recursively
+        const parentTweet = updatedTweets.find((t) => t.id === parentId);
+        if (parentTweet && parentTweet.parentId !== null) {
+          updateParentIsReplied(parentTweet.parentId);
+        }
+      };
+
+      // If the new tweet is a reply, call the function
+      if (tweet.parentId !== null) {
+        updateParentIsReplied(tweet.parentId);
+      }
+
+      // add the new tweet and include the newly updated tweets
+      return [tweet, ...updatedTweets];
+    });
   };
 
   const handleLikeTweet = (tweetId: number) => {
